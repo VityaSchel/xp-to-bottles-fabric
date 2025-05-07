@@ -1,0 +1,25 @@
+{
+	"schemaVersion": 1,
+	"id": "demovio-bottle-xp",
+	"version": "${version}",
+	"name": "Demovio Bottle XP",
+	"description": "Bottles->XP bottles",
+	"authors": [
+		"VityaSchel"
+	],
+	"contact": {
+		"homepage": "https://demovio.lol/"
+	},
+	"license": "MIT",
+	"icon": "assets/demovio-bottle-xp/icon.png",
+	"environment": "server",
+	"mixins": [
+		"demovio-bottle-xp.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.14",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	}
+}
