@@ -8,7 +8,8 @@
 		"VityaSchel"
 	],
 	"contact": {
-		"homepage": "https://demovio.lol/"
+		"homepage": "https://demovio.lol/",
+		"sources": "https://github.com/VityaSchel/xp-to-bottles-fabric"
 	},
 	"license": "MIT",
 	"icon": "assets/demovio-bottle-xp/icon.png",
