@@ -8,7 +8,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,32 +26,45 @@ public abstract class ExperienceOrbEntityMixin {
 
 	@Inject(at = @At("HEAD"), method = "repairPlayerGears", cancellable = true)
 	private void bottleXp(PlayerEntity player, int amount, CallbackInfoReturnable<Integer> cir) {
-		if(amount >= 7) {
-			Map<EquipmentSlot, ItemStack> inventory = Maps.newEnumMap(EquipmentSlot.class);
-			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-				ItemStack itemStack = player.getEquippedStack(equipmentSlot);
-				if (!itemStack.isEmpty()) {
-					inventory.put(equipmentSlot, itemStack);
-				}
-			}
+		int expBottleCost = 7;
 
-			List<Map.Entry<EquipmentSlot, ItemStack>> list = Lists.newArrayList();
-			for (Map.Entry<EquipmentSlot, ItemStack> entry : inventory.entrySet()) {
-				ItemStack itemStack = entry.getValue();
-				Item item = itemStack.getItem();
-				if (!itemStack.isEmpty() && item == Items.GLASS_BOTTLE) {
-					list.add(entry);
-				}
+		Map<EquipmentSlot, ItemStack> inventory = Maps.newEnumMap(EquipmentSlot.class);
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+			ItemStack itemStack = player.getEquippedStack(equipmentSlot);
+			if (!itemStack.isEmpty()) {
+				inventory.put(equipmentSlot, itemStack);
 			}
+		}
 
-			if(!list.isEmpty()) {
-				ItemStack bottleStack = list.get(player.getRandom().nextInt(list.size())).getValue();
+		List<Map.Entry<EquipmentSlot, ItemStack>> list = Lists.newArrayList();
+		for (Map.Entry<EquipmentSlot, ItemStack> entry : inventory.entrySet()) {
+			ItemStack itemStack = entry.getValue();
+			Item item = itemStack.getItem();
+			if (!itemStack.isEmpty() && item == Items.GLASS_BOTTLE) {
+				list.add(entry);
+			}
+		}
+
+		if(!list.isEmpty()) {
+			ItemStack bottleStack = list.get(player.getRandom().nextInt(list.size())).getValue();
+			NbtCompound nbt = bottleStack.getOrCreateNbt();
+			int accumulated = nbt.getInt("accumulated") + amount;
+			int remaining = 0;
+			if(accumulated > expBottleCost) {
+				accumulated = 0;
 				bottleStack.decrement(1);
 				player.giveItemStack(new ItemStack(Items.EXPERIENCE_BOTTLE));
-				int i = amount - 7;
-				cir.setReturnValue(i > 0 ? this.repairPlayerGears(player, i) : 0);
-				cir.cancel();
+				remaining = amount - expBottleCost;
 			}
+			nbt.putInt("accumulated", accumulated);
+			bottleStack.setNbt(nbt);
+			bottleStack.setCustomName(
+					Text.literal("XP: " + accumulated + "/" + expBottleCost)
+							.formatted(Formatting.RESET)
+							.formatted(Formatting.GOLD)
+			);
+			cir.setReturnValue(remaining > 0 ? this.repairPlayerGears(player, remaining) : 0);
+			cir.cancel();
 		}
 	}
 }
