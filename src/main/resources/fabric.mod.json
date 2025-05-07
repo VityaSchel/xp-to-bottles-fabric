@@ -18,7 +18,7 @@
 		"demovio-bottle-xp.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.16.14",
+		"fabricloader": ">=0.16.0",
 		"minecraft": "~1.20.1",
 		"java": ">=17",
 		"fabric-api": "*"

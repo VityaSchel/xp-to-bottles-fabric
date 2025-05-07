@@ -1,6 +1,8 @@
 # XP to Bottles O' Enchantment
 
-Minecraft mod for 1.20.1 fabric
+Server-side minecraft mod for 1.20.1 fabric
+
+Hold glass bottles in any hand while collecting XP and they will convert into experience bottles!
 
 Made for [demovio.lol SMP](https://demovio.lol)
 
